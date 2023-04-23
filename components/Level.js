@@ -2,8 +2,10 @@ import React from 'react';
 
 import { RigidBody } from '@react-three/rapier';
 
-import { useState, useRef } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
+
+import { useGLTF } from '@react-three/drei';
 
 import * as THREE from 'three';
 
@@ -20,7 +22,7 @@ const obstacleMaterial1 = new THREE.MeshStandardMaterial({
 });
 const wallMaterial = new THREE.MeshStandardMaterial({ color: 'slategrey' });
 
-function BlockStart({ position = [0, 0, 0] }) {
+export function BlockStart({ position = [0, 0, 0] }) {
   return (
     <group position={position}>
       {/* floor */}
@@ -35,7 +37,34 @@ function BlockStart({ position = [0, 0, 0] }) {
   );
 }
 
-function BlockSpinner({ position = [0, 0, 0] }) {
+export function BlockEnd({ position = [0, 0, 0] }) {
+  const hamburger = useGLTF('/hamburger.glb');
+
+  hamburger.scene.children.forEach((mesh) => {
+    mesh.castShadow = true;
+  });
+  return (
+    <group position={position}>
+      {/* floor */}
+      <mesh
+        geometry={boxGeometry}
+        material={floorMaterial1}
+        scale={[4, 0.2, 4]}
+        position={[0, 0, 0]}
+        receiveShadow
+      />
+      <RigidBody type="fixed" colliders="hull" restitution={0.2}>
+        <primitive
+          object={hamburger.scene}
+          scale={0.2}
+          position={[0, 0.25, 0]}
+        />
+      </RigidBody>
+    </group>
+  );
+}
+
+export function BlockSpinner({ position = [0, 0, 0] }) {
   const obstacle = useRef();
 
   const [speed] = useState(
@@ -80,7 +109,7 @@ function BlockSpinner({ position = [0, 0, 0] }) {
   );
 }
 
-function BlockLimbo({ position = [0, 0, 0] }) {
+export function BlockLimbo({ position = [0, 0, 0] }) {
   const obstacle = useRef();
 
   const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
@@ -125,14 +154,86 @@ function BlockLimbo({ position = [0, 0, 0] }) {
   );
 }
 
-function Level() {
+export function BlockAxe({ position = [0, 0, 0] }) {
+  const obstacle = useRef();
+
+  const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
+
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime();
+    const x = Math.sin(time + timeOffset) * 1.25;
+    obstacle.current.setNextKinematicTranslation({
+      x: position[0] + x,
+      y: position[1] + 0.75,
+      z: position[2],
+    });
+  });
+
   return (
-    <>
-      <BlockStart position={[0, 0, 8]} />
-      <BlockSpinner position={[0, 0, 4]} />
-      <BlockLimbo position={[0, 0, 0]} />
-    </>
+    <group position={position}>
+      {/* floor */}
+      <mesh
+        geometry={boxGeometry}
+        material={floorMaterial2}
+        scale={[4, 0.2, 4]}
+        position={[0, -0.1, 0]}
+        receiveShadow
+      />
+
+      <RigidBody
+        type="kinematicPosition"
+        position={[0, 0.3, 0]}
+        restitution={0.2}
+        friction={0}
+        ref={obstacle}
+      >
+        <mesh
+          geometry={boxGeometry}
+          material={obstacleMaterial1}
+          scale={[1.5, 1.5, 0.3]}
+          castShadow
+          receiveShadow
+        />
+      </RigidBody>
+    </group>
   );
 }
 
-export default Level;
+export default function Level({
+  count = 5,
+  types = [BlockSpinner, BlockAxe, BlockLimbo],
+}) {
+  const blocks = useMemo(() => {
+    const blocks = [];
+    for (let i = 0; i < count; i++) {
+      const type = types[Math.floor(Math.random() * types.length)];
+      // blocks.push(
+      //   React.createElement(type, {
+      //     key: i,
+      //     position: [0, 0, i * 4],
+      //   })
+      // );
+
+      blocks.push(type);
+    }
+
+    return blocks;
+  });
+  return (
+    <>
+      <BlockStart position={[0, 0, 0]} />
+      {/* 
+      <BlockSpinner position={[0, 0, 12]} />
+      <BlockLimbo position={[0, 0, 8]} />
+      <BlockAxe position={[0, 0, 4]} />
+
+      <BlockEnd position={[0, 0, 0]} /> */}
+
+      {blocks.map((Block, index) => (
+        <Block key={index} position={[0, 0, -(index + 1) * 4]} />
+      ))}
+
+      <BlockEnd position={[0, 0, -(count + 1) * 4]} />
+    </>
+  );
+}
