@@ -6,6 +6,8 @@ import Head from 'next/head';
 import { Canvas } from '@react-three/fiber';
 import Experience from '../../components/Experience';
 
+import { KeyboardControls } from '@react-three/drei';
+
 export default function Home() {
   return (
     <>
@@ -15,17 +17,27 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Canvas
-        shadows
-        camera={{
-          fov: 45,
-          near: 0.1,
-          far: 200,
-          position: [2.5, 4, 6],
-        }}
+      <KeyboardControls
+        map={[
+          { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
+          { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
+          { name: 'leftward', keys: ['ArrowLeft', 'KeyA'] },
+          { name: 'rightward', keys: ['ArrowRight', 'KeyD'] },
+          { name: 'jump', keys: ['space'] },
+        ]}
       >
-        <Experience />
-      </Canvas>
+        <Canvas
+          shadows
+          camera={{
+            fov: 45,
+            near: 0.1,
+            far: 200,
+            position: [2.5, 4, 6],
+          }}
+        >
+          <Experience />
+        </Canvas>
+      </KeyboardControls>
     </>
   );
 }

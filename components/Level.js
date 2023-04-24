@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { RigidBody } from '@react-three/rapier';
+import { CuboidCollider, RigidBody } from '@react-three/rapier';
 
 import { useMemo, useState, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
@@ -199,6 +199,49 @@ export function BlockAxe({ position = [0, 0, 0] }) {
   );
 }
 
+const Bounds = ({ length = 1 }) => {
+  console.log(length);
+  return (
+    <>
+      <RigidBody type="fixed" restitution={0.2} friction={0}>
+        <mesh
+          position={[2.15, 0.75, -(length * 2) + 2]}
+          geometry={boxGeometry}
+          material={wallMaterial}
+          scale={[0.4, 1.5, length * 4]}
+          castShadow
+        />
+
+        <mesh
+          position={[-2.15, 0.75, -(length * 2) + 2]}
+          geometry={boxGeometry}
+          material={wallMaterial}
+          scale={[0.4, 1.5, length * 4]}
+          // castShadow
+
+          receiveShadow
+        />
+
+        <mesh
+          position={[0, 0.75, -(length * 4) + 2]}
+          geometry={boxGeometry}
+          material={wallMaterial}
+          scale={[4, 1.5, 0.3]}
+          // castShadow
+
+          receiveShadow
+        />
+      </RigidBody>
+      <CuboidCollider
+        args={[2, 0.1, 2 * length]}
+        position={[0, -0.1, -(length * 2) + 2]}
+        restitution={0.2}
+        friction={1}
+      />
+    </>
+  );
+};
+
 export default function Level({
   count = 5,
   types = [BlockSpinner, BlockAxe, BlockLimbo],
@@ -207,12 +250,6 @@ export default function Level({
     const blocks = [];
     for (let i = 0; i < count; i++) {
       const type = types[Math.floor(Math.random() * types.length)];
-      // blocks.push(
-      //   React.createElement(type, {
-      //     key: i,
-      //     position: [0, 0, i * 4],
-      //   })
-      // );
 
       blocks.push(type);
     }
@@ -234,6 +271,8 @@ export default function Level({
       ))}
 
       <BlockEnd position={[0, 0, -(count + 1) * 4]} />
+
+      <Bounds length={count + 2} />
     </>
   );
 }
