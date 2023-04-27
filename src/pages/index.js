@@ -23,7 +23,7 @@ export default function Home() {
           { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
           { name: 'leftward', keys: ['ArrowLeft', 'KeyA'] },
           { name: 'rightward', keys: ['ArrowRight', 'KeyD'] },
-          { name: 'jump', keys: ['space'] },
+          { name: 'jump', keys: ['Space'] },
         ]}
       >
         <Canvas
@@ -37,6 +37,7 @@ export default function Home() {
         >
           <Experience />
         </Canvas>
+        <Interface />
       </KeyboardControls>
     </>
   );
