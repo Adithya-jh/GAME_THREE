@@ -9,22 +9,22 @@ THREE.ColorManagement.legacyMode = false;
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
 
 const floor1Material = new THREE.MeshStandardMaterial({
-  color: '#111111',
+  color: '#ff2828',
   metalness: 0,
   roughness: 0,
 });
 const floor2Material = new THREE.MeshStandardMaterial({
-  color: '#222222',
+  color: 'green',
   metalness: 0,
   roughness: 0,
 });
 const obstacleMaterial = new THREE.MeshStandardMaterial({
-  color: '#ff0000',
+  color: 'yellow',
   metalness: 0,
   roughness: 1,
 });
 const wallMaterial = new THREE.MeshStandardMaterial({
-  color: '#887777',
+  color: 'skyblue',
   metalness: 0,
   roughness: 0,
 });
@@ -35,7 +35,7 @@ export function BlockStart({ position = [0, 0, 0] }) {
       <Float floatIntensity={0.25} rotationIntensity={0.25}>
         <Text
           font="/bebas-neue-v9-latin-regular.woff"
-          scale={4}
+          scale={0.25}
           maxWidth={0.25}
           lineHeight={0.75}
           textAlign="right"
@@ -71,7 +71,7 @@ export function BlockEnd({ position = [0, 0, 0] }) {
         scale={8}
         position={[0, 2.25, 2]}
       >
-        FINISH
+        {/* FINISH */}
         <meshBasicMaterial toneMapped={false} />
       </Text>
       <mesh
@@ -275,6 +275,10 @@ export function Level({
     return blocks;
   }, [count, types, seed]);
 
+  const wall = useGLTF(
+    'https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/macbook/model.gltf'
+  );
+
   return (
     <>
       <BlockStart position={[0, 0, 0]} />
@@ -282,6 +286,8 @@ export function Level({
       {blocks.map((Block, index) => (
         <Block key={index} position={[0, 0, -(index + 1) * 4]} />
       ))}
+
+      {/* <primitive object={wall.scene} /> */}
 
       <BlockEnd position={[0, 0, -(count + 1) * 4]} />
 

@@ -3,7 +3,7 @@ import useGame from './stores/useGame.js';
 import Lights from './Lights.js';
 import { Level } from './Level.js';
 import Player from './Player.js';
-// import Effects from './Effects.js';
+import Effects from './Effects.js';
 
 export default function Experience() {
   const blocksCount = useGame((state) => state.blocksCount);
