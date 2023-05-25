@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import useGame from './stores/useGame.js';
 
 export default function Player() {
+  // define
   const body = useRef();
   const [subscribeKeys, getKeys] = useKeyboardControls();
   const { rapier, world } = useRapier();
